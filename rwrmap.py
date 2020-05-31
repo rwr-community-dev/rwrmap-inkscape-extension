@@ -1,25 +1,24 @@
-#!/usr/bin/env python
-
-# based on jessyink_export.py by Hannes Hochreiner
-
-# These lines are only needed if you don't put the script directly into
-# the installation directory
 import sys
-# Unix
-sys.path.append('/usr/share/inkscape/extensions')
-# OS X
-sys.path.append('/Applications/Inkscape.app/Contents/Resources/extensions')
-# Windows
-sys.path.append('C:\Program Files\Inkscape\share\extensions')
-
-import inkex, os.path
+import inkex
+import os.path
 import subprocess
 import threading
 import tempfile
 import os
 import re
 import gettext
+
+
+# Setup the gettext function
 _ = gettext.gettext
+# These lines are only needed if you don't put the script directly into the installation directory
+# Unix
+sys.path.append('/usr/share/inkscape/extensions')
+# OS X
+sys.path.append('/Applications/Inkscape.app/Contents/Resources/extensions')
+# Windows
+sys.path.append(r'C:\Program Files\Inkscape\share\extensions')
+
 
 def propStrToDict(inStr):
     dictio = {}
@@ -32,6 +31,7 @@ def propStrToDict(inStr):
 
     return dictio
 
+
 def dictToPropStr(dictio):
     str = ""
 
@@ -40,10 +40,11 @@ def dictToPropStr(dictio):
 
     return str[1:]
 
+
 def setStyle(node, propKey, propValue):
     props = {}
 
-    if node.attrib.has_key("style"):
+    if "style" in node.attrib:
         props = propStrToDict(node.get("style"))
 
     props[propKey] = propValue
@@ -68,26 +69,26 @@ class MyEffect(inkex.Effect):
 
         self.OptionParser.add_option("--desc")
         self.OptionParser.add_option("--folderpath",
-                action="store", type="string",
-                dest="folderpath", default=None,
-                help="")
+                                     action="store", type="string",
+                                     dest="folderpath", default=None,
+                                     help="")
         self.OptionParser.add_option("--mapview",
-                action="store", type="inkbool",
-                dest="handle_mapview", default=True,
-                help="")
+                                     action="store", type="inkbool",
+                                     dest="handle_mapview", default=True,
+                                     help="")
         self.OptionParser.add_option("--height",
-                action="store", type="inkbool",
-                dest="handle_height", default=True,
-                help="")
+                                     action="store", type="inkbool",
+                                     dest="handle_height", default=True,
+                                     help="")
         self.OptionParser.add_option("--splats",
-                action="store", type="inkbool",
-                dest="handle_splats", default=True,
-                help="")
+                                     action="store", type="inkbool",
+                                     dest="handle_splats", default=True,
+                                     help="")
 
         # Set inkscape command.
         self.inkscapeCommand = self.findInkscapeCommand()
 
-        if (self.inkscapeCommand == None):
+        if not self.inkscapeCommand:
             inkex.errormsg(_("Could not find Inkscape command.\n"))
             sys.exit(1)
 
@@ -109,11 +110,11 @@ class MyEffect(inkex.Effect):
             label = node.attrib["{" + inkex.NSS["inkscape"] + "}label"]
 
             if ((self.options.handle_splats and (label == "asphalt")) or
-                (self.options.handle_splats and (label == "road")) or
-                (self.options.handle_splats and (label == "grass")) or
-                (self.options.handle_splats and (label == "sand")) or
-                (self.options.handle_height and (label == "height")) or
-                (self.options.handle_splats and  label.startswith("alpha_"))):
+                    (self.options.handle_splats and (label == "road")) or
+                    (self.options.handle_splats and (label == "grass")) or
+                    (self.options.handle_splats and (label == "sand")) or
+                    (self.options.handle_height and (label == "height")) or
+                    (self.options.handle_splats and label.startswith("alpha_"))):
 
                 setStyle(node, "display", "inherit")
                 setStyle(node, "opacity", "1")
@@ -125,20 +126,14 @@ class MyEffect(inkex.Effect):
             for node in exportNodes:
                 label = node.attrib["{" + inkex.NSS["inkscape"] + "}label"]
 
-                # include all layers except these
-                #if ((label == "bases") or
-                #    (label == "grid")):
-                #    setStyle(node, "display", "none")
-
                 # include these layers only
                 if ((label == "objects") or
-                    (label == "walls") or
-                    (label == "rocks") or
-                    (label.startswith("layer"))):
+                        (label == "walls") or
+                        (label == "rocks") or
+                        (label.startswith("layer"))):
                     setStyle(node, "display", "inherit")
                 else:
                     setStyle(node, "display", "none")
-
 
             self.takeSnapshot("map_view")
 
@@ -147,8 +142,7 @@ class MyEffect(inkex.Effect):
                 label = node.attrib["{" + inkex.NSS["inkscape"] + "}label"]
 
                 # include these layers only
-                if ((label.startswith("woods_")) or
-                    (label.startswith("layer"))):
+                if ((label.startswith("woods_")) or (label.startswith("layer"))):
                     setStyle(node, "display", "inherit")
                 else:
                     setStyle(node, "display", "none")
@@ -158,7 +152,7 @@ class MyEffect(inkex.Effect):
             # map view decoration layer
             for node in exportNodes:
                 label = node.attrib["{" + inkex.NSS["inkscape"] + "}label"]
-                
+
                 # include these layers only
                 if (label == "map_view_decoration"):
                     setStyle(node, "display", "inherit")
@@ -187,35 +181,28 @@ class MyEffect(inkex.Effect):
         svgFileDesc, svgFile = tempfile.mkstemp(suffix=".svg", prefix="_rwr_")
         self.document.write(os.fdopen(svgFileDesc, "wb"))
 
-        #svgFile = path + "_rwr_" + fileName + ".svg"
-        #svgFileDesc = os.open(svgFile, os.O_RDWR|os.O_CREAT)
-        #self.document.write(os.fdopen(svgFileDesc,"wb"))
-
         ext = "png"
-        #outFile = "\"" + path + "_rwr_" + fileName + "." + ext + "\""
         outFile = path + "_rwr_" + fileName + "." + ext
-
-        #proc = subprocess.Popen([self.inkscapeCommand + " --file=" + svgFile  + " --without-gui --export-area-page --export-" + ext + "=" + outFile], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #stdout_value, stderr_value = proc.communicate()
-
-        PopenThread(self.inkscapeCommand + " --file=" + svgFile  + " --without-gui --export-area-page --export-" + ext + "=" + outFile).start()
-
+        PopenThread(self.inkscapeCommand + " --file=" + svgFile + " --without-gui --export-area-page --export-" + ext
+                    + "=" + outFile).start()
 
     # Function to try and find the correct command to invoke Inkscape.
     def findInkscapeCommand(self):
         commands = []
         commands.append("inkscape")
-        commands.append("C:\Program Files\Inkscape\inkscape.exe")
+        commands.append(r"C:\Program Files\Inkscape\inkscape.exe")
         commands.append("/Applications/Inkscape.app/Contents/Resources/bin/inkscape")
 
         for command in commands:
-            proc = subprocess.Popen(command + " --without-gui --version", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc = subprocess.Popen(command + " --without-gui --version", shell=True,
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout_value, stderr_value = proc.communicate()
 
             if proc.returncode == 0:
                 return command
 
         return None
+
 
 e = MyEffect()
 e.affect()
