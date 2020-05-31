@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-	<_name>RWR png output</_name>
-	<id>com.modulaatio.rwr.export</id>
-	<dependency type="executable" location="extensions">rwr.py</dependency>
+	<_name>Export PNGs</_name>
+	<id>github.david-wm-sanders.rwrmap</id>
+	<dependency type="executable" location="extensions">rwrmap.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>
   <param name="folderpath" type="string" _gui-text="Path to map folder:">none</param>
   <param name="splats" type="boolean" _gui-text="Generate splat maps">true</param>
@@ -11,10 +11,10 @@
   <effect needs-live-preview="false">
     <object-type>all</object-type>
     <effects-menu>
-      <submenu _name="Running with rifles"/>
+      <submenu _name="RWR Map"/>
     </effects-menu>
   </effect>
 	<script>
-		<command reldir="extensions" interpreter="python">rwr.py</command>
+		<command reldir="extensions" interpreter="python">rwrmap.py</command>
 	</script>
 </inkscape-extension>
