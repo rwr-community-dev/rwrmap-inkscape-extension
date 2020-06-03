@@ -2,8 +2,8 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
 	<_name>Export PNGs</_name>
 	<id>github.david-wm-sanders.rwrmap</id>
-	<dependency type="executable" location="extensions">rwrmap.py</dependency>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
+	<dependency type="executable" location="inx">rwrmap.py</dependency>
+	<!-- <dependency type="executable" location="extensions">inkex.py</dependency> -->
   <param name="folderpath" type="string" _gui-text="Path to map folder:">none</param>
   <param name="splats" type="boolean" _gui-text="Generate splat maps">true</param>
   <param name="height" type="boolean" _gui-text="Generate height map">true</param>
@@ -15,6 +15,6 @@
     </effects-menu>
   </effect>
 	<script>
-		<command reldir="extensions" interpreter="python">rwrmap.py</command>
+		<command location="inx" interpreter="python">rwrmap.py</command>
 	</script>
 </inkscape-extension>

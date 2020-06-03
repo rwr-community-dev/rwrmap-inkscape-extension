@@ -59,38 +59,18 @@ class PopenThread(threading.Thread):
     def run(self):
         proc = subprocess.Popen(self.param, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout_value, stderr_value = proc.communicate()
+        # inkex.errormsg(stderr_value)
 
 
 class MyEffect(inkex.Effect):
-    inkscapeCommand = None
-
     def __init__(self):
         inkex.Effect.__init__(self)
 
-        self.OptionParser.add_option("--desc")
-        self.OptionParser.add_option("--folderpath",
-                                     action="store", type="string",
-                                     dest="folderpath", default=None,
-                                     help="")
-        self.OptionParser.add_option("--mapview",
-                                     action="store", type="inkbool",
-                                     dest="handle_mapview", default=True,
-                                     help="")
-        self.OptionParser.add_option("--height",
-                                     action="store", type="inkbool",
-                                     dest="handle_height", default=True,
-                                     help="")
-        self.OptionParser.add_option("--splats",
-                                     action="store", type="inkbool",
-                                     dest="handle_splats", default=True,
-                                     help="")
-
-        # Set inkscape command.
-        self.inkscapeCommand = self.findInkscapeCommand()
-
-        if not self.inkscapeCommand:
-            inkex.errormsg(_("Could not find Inkscape command.\n"))
-            sys.exit(1)
+        self.arg_parser.add_argument("--desc")
+        self.arg_parser.add_argument("--folderpath", type=str, dest="folderpath", default=None, help="")
+        self.arg_parser.add_argument("--mapview", type=inkex.Boolean, dest="handle_mapview", default=True, help="")
+        self.arg_parser.add_argument("--height", type=inkex.Boolean, dest="handle_height", default=True, help="")
+        self.arg_parser.add_argument("--splats", type=inkex.Boolean, dest="handle_splats", default=True, help="")
 
     def output(self):
         pass
@@ -183,26 +163,8 @@ class MyEffect(inkex.Effect):
 
         ext = "png"
         outFile = path + "_rwr_" + fileName + "." + ext
-        PopenThread(self.inkscapeCommand + " --file=" + svgFile + " --without-gui --export-area-page --export-" + ext
-                    + "=" + outFile).start()
-
-    # Function to try and find the correct command to invoke Inkscape.
-    def findInkscapeCommand(self):
-        commands = []
-        commands.append("inkscape")
-        commands.append(r"C:\Program Files\Inkscape\inkscape.exe")
-        commands.append("/Applications/Inkscape.app/Contents/Resources/bin/inkscape")
-
-        for command in commands:
-            proc = subprocess.Popen(command + " --without-gui --version", shell=True,
-                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout_value, stderr_value = proc.communicate()
-
-            if proc.returncode == 0:
-                return command
-
-        return None
+        PopenThread("inkscape" + " --export-area-page --export-filename=" + outFile + f" {svgFile}").start()
 
 
 e = MyEffect()
-e.affect()
+e.run()
