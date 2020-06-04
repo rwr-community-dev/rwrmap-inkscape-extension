@@ -1,12 +1,11 @@
-import sys
-import inkex
-import os.path
-import subprocess
-import threading
-import tempfile
-import os
-import re
 import gettext
+import os
+import subprocess
+import sys
+import tempfile
+import threading
+
+import inkex
 
 
 # Setup the gettext function
