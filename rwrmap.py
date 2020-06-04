@@ -159,7 +159,10 @@ class MyEffect(inkex.Effect):
 
         # Write the svg file.
         svgFileDesc, svgFile = tempfile.mkstemp(suffix=".svg", prefix="_rwr_")
-        self.document.write(os.fdopen(svgFileDesc, "wb"))
+        fhl = os.fdopen(svgFileDesc, "wb")
+        self.document.write(fhl)
+        # Make sure to close the file handle after writing the file
+        fhl.close()
 
         ext = "png"
         outFile = path + "_rwr_" + fileName + "." + ext
