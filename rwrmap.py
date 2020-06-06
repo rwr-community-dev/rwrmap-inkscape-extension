@@ -78,9 +78,15 @@ class MyEffect(inkex.Effect):
         # Find layers.
         exportNodes = self.document.xpath("//svg:g[@inkscape:groupmode='layer']", namespaces=inkex.NSS)
 
+        # If there are no layers, write an error message for display by Inkscape and exit fast
         if len(exportNodes) < 1:
-            sys.stderr.write("No layers found.")
+            inkex.errormsg("Error: No layers found")
+            sys.exit()
 
+        # DEBUG: log object info via an errormsg
+        # inkex.errormsg(exportNodes[0].attrib)
+
+        # Set all nodes to 'display: none' so that specific nodes can be made visible per export
         for node in exportNodes:
             setStyle(node, "display", "none")
 
