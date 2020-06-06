@@ -8,6 +8,8 @@ import threading
 import inkex
 
 
+# Setup some constants
+INKSCAPE_LABEL = f"{{{inkex.NSS['inkscape']}}}label"
 # Setup the gettext function
 _ = gettext.gettext
 # These lines are only needed if you don't put the script directly into the installation directory
@@ -92,7 +94,7 @@ class MyEffect(inkex.Effect):
 
         # export terrain alpha splat and height maps one by one
         for node in exportNodes:
-            label = node.attrib["{" + inkex.NSS["inkscape"] + "}label"]
+            label = node.attrib[INKSCAPE_LABEL]
 
             if ((self.options.handle_splats and (label == "asphalt")) or
                     (self.options.handle_splats and (label == "road")) or
@@ -109,7 +111,7 @@ class MyEffect(inkex.Effect):
         # export tab-map image
         if (self.options.handle_mapview):
             for node in exportNodes:
-                label = node.attrib["{" + inkex.NSS["inkscape"] + "}label"]
+                label = node.attrib[INKSCAPE_LABEL]
 
                 # include these layers only
                 if ((label == "objects") or
@@ -124,7 +126,7 @@ class MyEffect(inkex.Effect):
 
             # take woods separately
             for node in exportNodes:
-                label = node.attrib["{" + inkex.NSS["inkscape"] + "}label"]
+                label = node.attrib[INKSCAPE_LABEL]
 
                 # include these layers only
                 if ((label.startswith("woods_")) or (label.startswith("layer"))):
@@ -136,7 +138,7 @@ class MyEffect(inkex.Effect):
 
             # map view decoration layer
             for node in exportNodes:
-                label = node.attrib["{" + inkex.NSS["inkscape"] + "}label"]
+                label = node.attrib[INKSCAPE_LABEL]
 
                 # include these layers only
                 if (label == "map_view_decoration"):
@@ -148,7 +150,7 @@ class MyEffect(inkex.Effect):
 
             # map view bases layer
             for node in exportNodes:
-                label = node.attrib["{" + inkex.NSS["inkscape"] + "}label"]
+                label = node.attrib[INKSCAPE_LABEL]
 
                 # include these layers only
                 if (label == "map_view_bases"):
