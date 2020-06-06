@@ -161,19 +161,18 @@ class MyEffect(inkex.Effect):
             self.takeSnapshot("map_view_bases")
 
     # Function to export the current state of the file using Inkscape.
-    def takeSnapshot(self, fileName):
-        path = self.options.folderpath + "/"
-
+    def takeSnapshot(self, name):
         # Write the svg file.
-        svgFileDesc, svgFile = tempfile.mkstemp(suffix=".svg", prefix="_rwr_")
-        fhl = os.fdopen(svgFileDesc, "wb")
+        svg_fd, svg_f = tempfile.mkstemp(suffix=".svg", prefix="_rwr_")
+        fhl = os.fdopen(svg_fd, "wb")
         self.document.write(fhl)
         # Make sure to close the file handle after writing the file
         fhl.close()
 
-        ext = "png"
-        outFile = path + "_rwr_" + fileName + "." + ext
-        PopenThread("inkscape" + " --export-area-page --export-filename=" + outFile + f" {svgFile}").start()
+        export_name = f"{self.options.folderpath}/_rwr_{name}.png"
+        export_command = f"inkscape --export-area-page --export-filename=\"{export_name}\" \"{svg_f}\""
+        # inkex.errormsg(f"Running: {export_command}")
+        PopenThread(export_command).start()
 
 
 e = MyEffect()
