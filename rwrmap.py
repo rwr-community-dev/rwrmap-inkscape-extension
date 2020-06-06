@@ -12,13 +12,6 @@ import inkex
 INKSCAPE_LABEL = f"{{{inkex.NSS['inkscape']}}}label"
 # Setup the gettext function
 _ = gettext.gettext
-# These lines are only needed if you don't put the script directly into the installation directory
-# Unix
-sys.path.append('/usr/share/inkscape/extensions')
-# OS X
-sys.path.append('/Applications/Inkscape.app/Contents/Resources/extensions')
-# Windows
-sys.path.append(r'C:\Program Files\Inkscape\share\extensions')
 
 
 def propStrToDict(inStr):
