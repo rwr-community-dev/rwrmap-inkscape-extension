@@ -1,4 +1,3 @@
-import gettext
 import os
 import subprocess
 import sys
@@ -10,8 +9,6 @@ import inkex
 
 # Setup some constants
 INKSCAPE_LABEL = f"{{{inkex.NSS['inkscape']}}}label"
-# Setup the gettext function
-_ = gettext.gettext
 
 
 def propStrToDict(inStr):
