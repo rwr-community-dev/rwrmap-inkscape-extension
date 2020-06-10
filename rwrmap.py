@@ -9,6 +9,8 @@ import inkex
 
 # Setup some constants
 INKSCAPE_LABEL = f"{{{inkex.NSS['inkscape']}}}label"
+TERRAIN_LAYERS = ["height", "asphalt", "road", "grass", "sand"]
+MAPVIEW_LAYERS = ["objects", "walls", "rocks"]
 
 
 def propStrToDict(inStr):
@@ -59,9 +61,9 @@ class MyEffect(inkex.Effect):
 
         self.arg_parser.add_argument("--desc")
         self.arg_parser.add_argument("--folderpath", type=str, dest="folderpath", default=None, help="")
-        self.arg_parser.add_argument("--mapview", type=inkex.Boolean, dest="handle_mapview", default=True, help="")
-        self.arg_parser.add_argument("--height", type=inkex.Boolean, dest="handle_height", default=True, help="")
-        self.arg_parser.add_argument("--splats", type=inkex.Boolean, dest="handle_splats", default=True, help="")
+        # self.arg_parser.add_argument("--mapview", type=inkex.Boolean, dest="handle_mapview", default=True, help="")
+        # self.arg_parser.add_argument("--height", type=inkex.Boolean, dest="handle_height", default=True, help="")
+        # self.arg_parser.add_argument("--splats", type=inkex.Boolean, dest="handle_splats", default=True, help="")
 
     def output(self):
         pass
@@ -82,73 +84,55 @@ class MyEffect(inkex.Effect):
         for node in exportNodes:
             setStyle(node, "display", "none")
 
-        # export terrain alpha splat and height maps one by one
+        # Export height and terrain alpha splat maps
         for node in exportNodes:
             label = node.attrib[INKSCAPE_LABEL]
-
-            if ((self.options.handle_splats and (label == "asphalt")) or
-                    (self.options.handle_splats and (label == "road")) or
-                    (self.options.handle_splats and (label == "grass")) or
-                    (self.options.handle_splats and (label == "sand")) or
-                    (self.options.handle_height and (label == "height")) or
-                    (self.options.handle_splats and label.startswith("alpha_"))):
-
+            if label in TERRAIN_LAYERS or label.startswith("alpha_"):
                 setStyle(node, "display", "inherit")
                 setStyle(node, "opacity", "1")
                 self.takeSnapshot(label)
                 setStyle(node, "display", "none")
 
-        # export tab-map image
-        if (self.options.handle_mapview):
-            for node in exportNodes:
-                label = node.attrib[INKSCAPE_LABEL]
+        # Export map_view
+        for node in exportNodes:
+            label = node.attrib[INKSCAPE_LABEL]
+            # Layers, such as walls, are in sub-layers - we must display the parent layers that start with "layer"
+            if label.startswith("layer") or label in MAPVIEW_LAYERS:
+                setStyle(node, "display", "inherit")
+            else:
+                setStyle(node, "display", "none")
 
-                # include these layers only
-                if ((label == "objects") or
-                        (label == "walls") or
-                        (label == "rocks") or
-                        (label.startswith("layer"))):
-                    setStyle(node, "display", "inherit")
-                else:
-                    setStyle(node, "display", "none")
+        self.takeSnapshot("map_view")
 
-            self.takeSnapshot("map_view")
+        # Export map_view_woods
+        for node in exportNodes:
+            label = node.attrib[INKSCAPE_LABEL]
+            if label.startswith("layer") or label.startswith("woods_"):
+                setStyle(node, "display", "inherit")
+            else:
+                setStyle(node, "display", "none")
 
-            # take woods separately
-            for node in exportNodes:
-                label = node.attrib[INKSCAPE_LABEL]
+        self.takeSnapshot("map_view_woods")
 
-                # include these layers only
-                if ((label.startswith("woods_")) or (label.startswith("layer"))):
-                    setStyle(node, "display", "inherit")
-                else:
-                    setStyle(node, "display", "none")
+        # Export map_view_decoration layer
+        for node in exportNodes:
+            label = node.attrib[INKSCAPE_LABEL]
+            if label == "map_view_decoration":
+                setStyle(node, "display", "inherit")
+            else:
+                setStyle(node, "display", "none")
 
-            self.takeSnapshot("map_view_woods")
+        self.takeSnapshot("map_view_decoration")
 
-            # map view decoration layer
-            for node in exportNodes:
-                label = node.attrib[INKSCAPE_LABEL]
+        # Export map_view_bases layer
+        for node in exportNodes:
+            label = node.attrib[INKSCAPE_LABEL]
+            if label == "map_view_bases":
+                setStyle(node, "display", "inherit")
+            else:
+                setStyle(node, "display", "none")
 
-                # include these layers only
-                if (label == "map_view_decoration"):
-                    setStyle(node, "display", "inherit")
-                else:
-                    setStyle(node, "display", "none")
-
-            self.takeSnapshot("map_view_decoration")
-
-            # map view bases layer
-            for node in exportNodes:
-                label = node.attrib[INKSCAPE_LABEL]
-
-                # include these layers only
-                if (label == "map_view_bases"):
-                    setStyle(node, "display", "inherit")
-                else:
-                    setStyle(node, "display", "none")
-
-            self.takeSnapshot("map_view_bases")
+        self.takeSnapshot("map_view_bases")
 
     # Function to export the current state of the file using Inkscape.
     def takeSnapshot(self, name):

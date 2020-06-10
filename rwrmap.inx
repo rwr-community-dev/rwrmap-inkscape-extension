@@ -4,9 +4,9 @@
 	<id>github.david-wm-sanders.rwrmap</id>
 	<!-- <dependency type="executable" location="inx">rwrmap.py</dependency> -->
   <param name="folderpath" type="string" _gui-text="Path to map folder:">none</param>
-  <param name="splats" type="boolean" _gui-text="Generate splat maps">true</param>
-  <param name="height" type="boolean" _gui-text="Generate height map">true</param>
-  <param name="mapview" type="boolean" _gui-text="Generate map view">true</param>
+  <!-- <param name="splats" type="boolean" _gui-text="Generate splat maps">true</param> -->
+  <!-- <param name="height" type="boolean" _gui-text="Generate height map">true</param> -->
+  <!-- <param name="mapview" type="boolean" _gui-text="Generate map view">true</param> -->
   <effect needs-live-preview="false">
     <object-type>all</object-type>
     <effects-menu>
