@@ -61,9 +61,6 @@ class MyEffect(inkex.Effect):
 
         self.arg_parser.add_argument("--desc")
         self.arg_parser.add_argument("--folderpath", type=str, dest="folderpath", default=None, help="")
-        # self.arg_parser.add_argument("--mapview", type=inkex.Boolean, dest="handle_mapview", default=True, help="")
-        # self.arg_parser.add_argument("--height", type=inkex.Boolean, dest="handle_height", default=True, help="")
-        # self.arg_parser.add_argument("--splats", type=inkex.Boolean, dest="handle_splats", default=True, help="")
 
     def output(self):
         pass
