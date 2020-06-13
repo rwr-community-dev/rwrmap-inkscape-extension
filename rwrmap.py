@@ -67,31 +67,31 @@ class MyEffect(inkex.Effect):
 
     def effect(self):
         # Find layers.
-        exportNodes = self.document.xpath("//svg:g[@inkscape:groupmode='layer']", namespaces=inkex.NSS)
+        export_nodes = self.document.xpath("//svg:g[@inkscape:groupmode='layer']", namespaces=inkex.NSS)
 
         # If there are no layers, write an error message for display by Inkscape and exit fast
-        if len(exportNodes) < 1:
+        if len(export_nodes) < 1:
             inkex.errormsg("Error: No layers found")
             sys.exit()
 
         # DEBUG: log object info via an errormsg
-        # inkex.errormsg(exportNodes[0].attrib)
+        # inkex.errormsg(export_nodes[0].attrib)
 
         # Set all nodes to 'display: none' so that specific nodes can be made visible per export
-        for node in exportNodes:
+        for node in export_nodes:
             setStyle(node, "display", "none")
 
         # Export height and terrain alpha splat maps
-        for node in exportNodes:
+        for node in export_nodes:
             label = node.attrib[INKSCAPE_LABEL]
             if label in TERRAIN_LAYERS or label.startswith("alpha_"):
                 setStyle(node, "display", "inherit")
                 setStyle(node, "opacity", "1")
-                self.takeSnapshot(label)
+                self.take_snapshot(label)
                 setStyle(node, "display", "none")
 
         # Export map_view
-        for node in exportNodes:
+        for node in export_nodes:
             label = node.attrib[INKSCAPE_LABEL]
             # Layers, such as walls, are in sub-layers - we must display the parent layers that start with "layer"
             if label.startswith("layer") or label in MAPVIEW_LAYERS:
@@ -99,40 +99,40 @@ class MyEffect(inkex.Effect):
             else:
                 setStyle(node, "display", "none")
 
-        self.takeSnapshot("map_view")
+        self.take_snapshot("map_view")
 
         # Export map_view_woods
-        for node in exportNodes:
+        for node in export_nodes:
             label = node.attrib[INKSCAPE_LABEL]
             if label.startswith("layer") or label.startswith("woods_"):
                 setStyle(node, "display", "inherit")
             else:
                 setStyle(node, "display", "none")
 
-        self.takeSnapshot("map_view_woods")
+        self.take_snapshot("map_view_woods")
 
         # Export map_view_decoration layer
-        for node in exportNodes:
+        for node in export_nodes:
             label = node.attrib[INKSCAPE_LABEL]
             if label == "map_view_decoration":
                 setStyle(node, "display", "inherit")
             else:
                 setStyle(node, "display", "none")
 
-        self.takeSnapshot("map_view_decoration")
+        self.take_snapshot("map_view_decoration")
 
         # Export map_view_bases layer
-        for node in exportNodes:
+        for node in export_nodes:
             label = node.attrib[INKSCAPE_LABEL]
             if label == "map_view_bases":
                 setStyle(node, "display", "inherit")
             else:
                 setStyle(node, "display", "none")
 
-        self.takeSnapshot("map_view_bases")
+        self.take_snapshot("map_view_bases")
 
     # Function to export the current state of the file using Inkscape.
-    def takeSnapshot(self, name):
+    def take_snapshot(self, name):
         # Write the svg file.
         svg_fd, svg_f = tempfile.mkstemp(suffix=".svg", prefix="_rwr_")
         fhl = os.fdopen(svg_fd, "wb")
